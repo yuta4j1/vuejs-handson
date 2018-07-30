@@ -27,6 +27,11 @@
                     </div>
                 </div>
             </div>
+            <div class="row" style="padding-top: 5%">
+                <div class="col-sm-8">
+                    <button id="saveButton" type="button" class="btn btn-primary btn-lg btn-block" @onclick="save()">Save</button>
+                </div>
+            </div>
         </div>
         <!-- モーダル画面 -->
        <detail-modal :datas='todos' ref="modal"></detail-modal>
@@ -43,7 +48,7 @@ export default {
             aTodo: {
                 text: '',
                 description: '',
-                checked: false
+                done: false
             },
             todos: [],
             buttonLabel: {
@@ -55,7 +60,7 @@ export default {
     methods: {
         todoAdd: function() {
             this.todos.push(this.aTodo);
-            this.aTodo = {text: '', checked: false};
+            this.aTodo = {text: '', done: false};
         },
         clear: function() {
             this.todos = [];
@@ -65,6 +70,9 @@ export default {
         },
         showModal: function(todo) {
             this.$refs.modal.represent(todo);
+        },
+        todos: function() {
+            this.$store.dispatch('commitTodos', this.todos);
         }
     },
     components: {

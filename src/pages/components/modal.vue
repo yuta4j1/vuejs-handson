@@ -14,8 +14,7 @@
                     <textarea v-if="isTextArea" class="form-control" id="exampleTextarea" rows="3" v-model="info.description" ></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="editMode()">Edit comment</button>
-                    <button type="button" class="btn btn-primary" @click="confirm()">Confirm</button>
+                    <button type="button" class="btn btn-primary" @click="switchMode()">{{ displayFooterButton }}</button>
                 </div>
                 </div>
             </div>
@@ -31,15 +30,21 @@
             return {
                 info:{},
                 defaultComment: 'Insert comment.',
-                isTextArea: false
+                isTextArea: false,
+                footerButtonLabel: {
+                    edit: 'Edit comment',
+                    confirm: 'Confirm'
+                }
             }
         },
         methods: {
-            editMode: function() {
-                this.isTextArea = true;
-            },
-            confim: function() {
-                this.isTextArea = false;
+            switchMode: function() { 
+                console.log("[func] switchMode : ", this.isTextArea)
+                if (this.isTextArea) {
+                    this.isTextArea = false;
+                } else {
+                    this.isTextArea = true;
+                }
             },
             represent: function(data) {
                 this.info = data;
@@ -49,6 +54,9 @@
         computed: {
             displayComment: function() {
                 return this.info.description !== '' ? this.info.description : this.defaultComment;
+            },
+            displayFooterButton: function() {
+                return this.isTextArea ? this.footerButtonLabel.confirm : this.footerButtonLabel.edit
             }
         }
         
