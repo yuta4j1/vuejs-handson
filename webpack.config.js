@@ -38,8 +38,9 @@ module.exports = {
         }
     },
     devServer: {
-        // contentBase: path.resolve(__dirname, 'static'),
-        publicPath: '/',
+        contentBase: path.resolve(__dirname, 'static'),
+        inline: true,
+        hot: true,
         open: true
     }
 }
