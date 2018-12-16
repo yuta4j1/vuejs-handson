@@ -1,12 +1,15 @@
 <template>
+<div>
+    <div style="margin-bottom: 50px">
+        <headbar />
+    </div>
     <div class="container center-block">
-        <h3>Hello World!!!</h3>
         <div id="contents">
             <div class="form-group row">
                 <div class="col-sm-8">
                     <div class="form-group">
                         <div class="input-group">
-                            <input type="text" class="form-control" v-model="aTodo.text" placeholder="タスクを入力してください。"/>
+                            <input type="text" class="form-control" v-model="aTaskCache.text" placeholder="タスクを入力してください。"/>
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-primary" @click="todoAdd()">{{ buttonLabel.addButton }}</button>
                             </div>
@@ -23,7 +26,7 @@
                 <div id="display" class="col-sm-8">
                     <div class="list-group" v-if="isShowList()">
                         <a href="#" class="list-group-item list-group-item-action active">ToDoリスト</a>
-                        <a href="#" class="list-group-item list-group-item-action" @click.stop="showModal(todo)" v-for="todo in todos">{{ todo.text }}</a>
+                        <a href="#" class="list-group-item list-group-item-action" @click.stop="showModal(task)" v-for="task in tasks">{{ task.text }}</a>
                     </div>
                 </div>
             </div>
@@ -34,23 +37,29 @@
             </div>
         </div>
         <!-- モーダル画面 -->
-       <detail-modal :datas='todos' ref="modal"></detail-modal>
+       <detail-modal :tasks='tasks' ref="modal"></detail-modal>
 
     </div>
+</div>
 </template>
 
 <script>
-import DetailModal from './components/modal.vue'
+import DetailModal from '@/pages/components/modal.vue'
+import Header from '@/pages/components/Header.vue'
+import { mapGetters } from 'vuex'
+import * as moment from 'moment'
 
 export default {
     data: function() {
         return {
-            aTodo: {
+            aTaskCache: {
+                id: 0,
                 text: '',
-                description: '',
+                remarks: '',
+                dateTime: '',
                 done: false
             },
-            todos: [],
+            tasks: [],
             buttonLabel: {
                 addButton: '追加',
                 clearButton: 'クリア'
@@ -58,25 +67,48 @@ export default {
         }
     },
     methods: {
+        initTaskCache: function() {
+            // タスクキャッシュの初期化
+            this.aTaskCache = {
+                id: 0,
+                text: '',
+                remarks: '',
+                datetime: '',
+                done: false
+            }
+        },
         todoAdd: function() {
-            this.todos.push(this.aTodo);
-            this.aTodo = {text: '', done: false};
+            this.aTaskCache['id'] = this.tasks.length + 1;
+            this.aTaskCache['dateTime'] = moment().format('YYYY-MM-DD HH:mm:SS');
+            this.tasks.push(this.aTaskCache);
+            this.initTaskCache();
         },
         clear: function() {
-            this.todos = [];
+            initTaskCache();
+            this.tasks = [];
         },
         isShowList: function() {
-            return this.todos.length !== 0 ? true : false;
+            return this.tasks.length >= 1;
         },
-        showModal: function(todo) {
-            this.$refs.modal.represent(todo);
+        showModal: function(task) {
+            this.$refs.modal.represent(task);
         },
-        todos: function() {
-            this.$store.dispatch('commitTodos', this.todos);
-        }
+        save: function() {
+            this.$store.dispatch('commitTodos', this.tasks);
+        },
+    },
+    computed: {
+        ...mapGetters('task', {
+            'storeTasks': 'getTasks'
+        })
+    },
+    mounted: function() {
+        console.log('[index.vue mounted]')
+        this.tasks.push(storeTasks);
     },
     components: {
-        'detail-modal': DetailModal
+        'detail-modal': DetailModal,
+        'headbar': Header
     }
 }
 
